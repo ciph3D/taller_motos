@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vistas para el modelo Moto -->
+    
+    <!-- Vista formulario -->
+    <record id="view_taller_moto_form" model="ir.ui.view">
+        <field name="name">taller.moto.form</field>
+        <field name="model">taller.moto</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_repairs" type="object" class="oe_stat_button" icon="fa-wrench">
+                            <field name="repair_count" widget="statinfo" string="Reparaciones"/>
+                        </button>
+                    </div>
+                    <field name="imagen" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="display_name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="marca"/>
+                            <field name="modelo"/>
+                            <field name="matricula"/>
+                            <field name="chasis"/>
+                        </group>
+                        <group>
+                            <field name="cliente_id"/>
+                            <field name="fecha_compra"/>
+                            <field name="kilometraje"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="notes">
+                            <field name="notas" placeholder="Añadir detalles adicionales sobre la moto..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Vista árbol (ahora list en Odoo 18) -->
+   <record id="view_taller_moto_list" model="ir.ui.view">
+    <field name="name">taller.moto.list</field>
+    <field name="model">taller.moto</field>
+    <field name="type">list</field>
+    <field name="arch" type="xml">
+        <list>
+            <field name="display_name"/>
+            <field name="cliente_id"/>
+            <field name="marca"/>
+            <field name="modelo"/>
+            <field name="matricula"/>
+            <field name="kilometraje"/>
+            <field name="state"/>
+        </list>
+    </field>
+</record>
+    
+    <!-- Vista kanban -->
+    <record id="view_taller_moto_kanban" model="ir.ui.view">
+        <field name="name">taller.moto.kanban</field>
+        <field name="model">taller.moto</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="id"/>
+                <field name="display_name"/>
+                <field name="marca"/>
+                <field name="modelo"/>
+                <field name="matricula"/>
+                <field name="cliente_id"/>
+                <field name="state"/>
+                <field name="imagen"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_partner_kanban">
+                            <div class="o_kanban_image_fill_left o_kanban_image_full d-none d-md-block"
+                                 t-attf-style="background-image: url(#{kanban_image('taller.moto', 'imagen', record.id.raw_value, placeholder)})"
+                                 role="img"/>
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title">
+                                    <field name="display_name"/>
+                                </strong>
+                                <div>
+                                    <span>Propietario: </span><field name="cliente_id"/>
+                                </div>
+                                <div>
+                                    <span>Matrícula: </span><field name="matricula"/>
+                                </div>
+                                <div>
+                                    <field name="state" widget="label_selection" options="{'classes': {
+                                        'activa': 'success', 
+                                        'reparacion': 'warning', 
+                                        'baja': 'danger'}}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <!-- Vista búsqueda -->
+    <record id="view_taller_moto_search" model="ir.ui.view">
+        <field name="name">taller.moto.search</field>
+        <field name="model">taller.moto</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="marca"/>
+                <field name="modelo"/>
+                <field name="matricula"/>
+                <field name="cliente_id"/>
+                <field name="chasis"/>
+                <separator/>
+                <filter name="active" domain="[('state', '=', 'activa')]"/>
+                <filter name="in_repair" domain="[('state', '=', 'reparacion')]"/>
+                <filter name="inactive" domain="[('state', '=', 'baja')]"/>
+                <group expand="0">
+                    <filter name="group_by_customer" context="{'group_by':'cliente_id'}"/>
+                    <filter name="group_by_brand" context="{'group_by':'marca'}"/>
+                    <filter name="group_by_model" context="{'group_by':'modelo'}"/>
+                    <filter name="group_by_state" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Acción de ventana -->
+    <record id="action_taller_moto" model="ir.actions.act_window">
+        <field name="name">Motos</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">taller.moto</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="search_view_id" ref="view_taller_moto_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Registra tu primera moto
+            </p>
+            <p>
+                Crea un registro de moto para asociarlo a un cliente y gestionar sus reparaciones.
+            </p>
+        </field>
+    </record>
+</odoo>

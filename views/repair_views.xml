@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extensión de vistas para project.project (reparaciones) -->
+    
+    <!-- Formulario de proyecto extendido para reparaciones -->
+    <record id="view_project_form_inherit_repair" model="ir.ui.view">
+        <field name="name">project.project.form.inherit.repair</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <!-- Añadir botones de acción -->
+            <div name="button_box" position="inside">
+                <button name="action_create_sale_order" type="object" class="oe_stat_button" icon="fa-file-text"
+                        attrs="{'invisible': [('sale_order_id', '!=', False)]}" string="Crear Presupuesto"/>
+                <button name="action_view_sale_order" type="object" class="oe_stat_button" icon="fa-file-text"
+                        attrs="{'invisible': [('sale_order_id', '=', False)]}" string="Ver Presupuesto"/>
+                <button name="action_view_invoices" type="object" class="oe_stat_button" icon="fa-file-text-o"
+                        attrs="{'invisible': [('invoice_count', '=', 0)]}">
+                    <field name="invoice_count" widget="statinfo" string="Facturas"/>
+                </button>
+                <button name="action_update_moto_kilometraje" type="object" class="oe_stat_button" icon="fa-refresh"
+                        attrs="{'invisible': [('moto_id', '=', False)]}" string="Actualizar Km"/>
+            </div>
+            
+            <!-- Ajustar título para incluir moto -->
+            <field name="name" position="after">
+                <h1 class="o_row">
+                    <field name="moto_id" domain="[('cliente_id', '=', partner_id)]"
+                           options="{'no_create': True}" placeholder="Seleccione una moto..."/>
+                </h1>
+            </field>
+            
+            <!-- Añadir campos de reparación -->
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="kilometraje_entrada"/>
+            </xpath>
+            
+            <xpath expr="//notebook" position="inside">
+                <page name="repair_info">
+                    <group>
+                        <group>
+                            <field name="fecha_entrada"/>
+                            <field name="fecha_salida"/>
+                        </group>
+                        <group>
+                            <field name="sale_order_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="symptoms">
+                            <field name="sintomas" placeholder="Describa los síntomas reportados por el cliente..."/>
+                        </page>
+                        <page name="diagnosis">
+                            <field name="diagnostico" placeholder="Registre el diagnóstico técnico..."/>
+                        </page>
+                        <page name="work_done">
+                            <field name="trabajo_realizado" placeholder="Describa el trabajo realizado..."/>
+                        </page>
+                    </notebook>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Kanban de proyecto modificado para reparaciones -->
+    <record id="view_project_kanban_inherit_repair" model="ir.ui.view">
+        <field name="name">project.project.kanban.inherit.repair</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.view_project_kanban"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="moto_id"/>
+                <field name="display_name"/>
+            </field>
+            <xpath expr="//div[hasclass('o_kanban_record_title')]" position="replace">
+                <div class="o_kanban_record_title">
+                    <field name="display_name"/>
+                </div>
+            </xpath>
+            <xpath expr="//div[hasclass('o_kanban_record_subtitle')]" position="replace">
+                <div class="o_kanban_record_subtitle">
+                    <span t-if="record.partner_id.value"><field name="partner_id"/></span>
+                    <span t-if="record.moto_id.value"> - <field name="moto_id"/></span>
+                </div>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Tree de proyecto modificado para reparaciones -->
+    <record id="view_project_tree_inherit_repair" model="ir.ui.view">
+        <field name="name">project.project.list.inherit.repair</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.view_project"/>
+        <field name="arch" type="xml">
+            <field name="name" position="replace">
+                <field name="display_name"/>
+            </field>
+            <field name="partner_id" position="after">
+                <field name="moto_id"/>
+                <field name="fecha_entrada"/>
+            </field>
+        </field>
+    </record>
+</odoo>
