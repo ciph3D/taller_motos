@@ -29,4 +29,11 @@
               parent="menu_taller_reparaciones" 
               action="project.open_view_project_all" 
               sequence="10"/>
+    
+    <menuitem id="menu_taller_repair_stages" 
+              name="Etapas de reparación" 
+              parent="menu_taller_reparaciones" 
+              action="project.open_task_type_form" 
+              sequence="90" 
+              groups="base.group_no_one"/>
 </odoo>

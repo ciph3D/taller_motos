@@ -6,12 +6,24 @@
     'description': """
         Módulo para gestionar un taller de motos
     """,
-    'depends': ['base', 'contacts'],
-    'data': [
-        'security/security.xml',         # Añade esta línea para el archivo XML de seguridad
-        'security/ir.model.access.csv',
-        'views/partner_views.xml',
+    'depends': [
+        'base', 
+        'contacts', 
+        'project', 
+        'sale_management', 
+        'account',
+        'calendar'
     ],
-    'installable': True,
+    'data': [
+        'security/security.xml',
+        'security/ir.model.access.csv',
+        'data/repair_stages.xml',
+        'views/partner_views.xml',
+        'views/moto_views.xml',
+        'views/repair_views.xml',
+        'views/menu_views.xml',
+    ],
     'application': True,
+    'installable': True,
+    'license': 'LGPL-3',
 }

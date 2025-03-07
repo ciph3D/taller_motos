@@ -1,13 +1,19 @@
-# Opción 1: Añadir el campo "modelo" al modelo res.partner
-# En tu archivo models/partner.py
-
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 
 class Partner(models.Model):
     _inherit = 'res.partner'
     
-    modelo = fields.Char(string="Modelo", help="Campo de modelo para taller de motos")
-    meeting_count = fields.Integer(string="Meetings", compute="_compute_meeting_count")
+    # Campos relacionados con motos
+    moto_ids = fields.One2many('taller.moto', 'cliente_id', string='Motos')
+    moto_count = fields.Integer(string='Número de motos', compute='_compute_moto_count')
+    
+    # Nuevo campo para gestión de reuniones
+    meeting_count = fields.Integer(string="Reuniones", compute="_compute_meeting_count")
+    
+    @api.depends('moto_ids')
+    def _compute_moto_count(self):
+        for partner in self:
+            partner.moto_count = len(partner.moto_ids)
     
     @api.depends()
     def _compute_meeting_count(self):
@@ -16,11 +22,22 @@ class Partner(models.Model):
                 ('partner_ids', 'in', partner.id)
             ])
     
+    def action_view_motos(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Motos del cliente'),
+            'res_model': 'taller.moto',
+            'view_mode': 'list,form',
+            'domain': [('cliente_id', '=', self.id)],
+            'context': {'default_cliente_id': self.id}
+        }
+    
     def schedule_meeting(self):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Programar Reunión',
+            'name': _('Programar Reunión'),
             'res_model': 'calendar.event',
             'view_mode': 'form',
             'context': {

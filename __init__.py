@@ -1,5 +1,4 @@
-# Solo importa el módulo models
 from . import models
 
-# Comentado hasta que se necesite
+# Descomentar cuando se necesite
 # from . import controllers

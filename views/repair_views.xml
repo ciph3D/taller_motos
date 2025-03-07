@@ -11,15 +11,15 @@
             <!-- Añadir botones de acción -->
             <div name="button_box" position="inside">
                 <button name="action_create_sale_order" type="object" class="oe_stat_button" icon="fa-file-text"
-                        attrs="{'invisible': [('sale_order_id', '!=', False)]}" string="Crear Presupuesto"/>
+                        invisible="sale_order_id" string="Crear Presupuesto"/>
                 <button name="action_view_sale_order" type="object" class="oe_stat_button" icon="fa-file-text"
-                        attrs="{'invisible': [('sale_order_id', '=', False)]}" string="Ver Presupuesto"/>
+                        invisible="not sale_order_id" string="Ver Presupuesto"/>
                 <button name="action_view_invoices" type="object" class="oe_stat_button" icon="fa-file-text-o"
-                        attrs="{'invisible': [('invoice_count', '=', 0)]}">
+                        invisible="invoice_count == 0">
                     <field name="invoice_count" widget="statinfo" string="Facturas"/>
                 </button>
                 <button name="action_update_moto_kilometraje" type="object" class="oe_stat_button" icon="fa-refresh"
-                        attrs="{'invisible': [('moto_id', '=', False)]}" string="Actualizar Km"/>
+                        invisible="not moto_id" string="Actualizar Km"/>
             </div>
             
             <!-- Ajustar título para incluir moto -->
@@ -36,7 +36,7 @@
             </xpath>
             
             <xpath expr="//notebook" position="inside">
-                <page name="repair_info">
+                <page string="Información de reparación" name="repair_info">
                     <group>
                         <group>
                             <field name="fecha_entrada"/>
@@ -47,13 +47,13 @@
                         </group>
                     </group>
                     <notebook>
-                        <page name="symptoms">
+                        <page string="Síntomas" name="symptoms">
                             <field name="sintomas" placeholder="Describa los síntomas reportados por el cliente..."/>
                         </page>
-                        <page name="diagnosis">
+                        <page string="Diagnóstico" name="diagnosis">
                             <field name="diagnostico" placeholder="Registre el diagnóstico técnico..."/>
                         </page>
-                        <page name="work_done">
+                        <page string="Trabajo Realizado" name="work_done">
                             <field name="trabajo_realizado" placeholder="Describa el trabajo realizado..."/>
                         </page>
                     </notebook>
@@ -62,32 +62,61 @@
         </field>
     </record>
     
-    <!-- Kanban de proyecto modificado para reparaciones -->
+    <!-- Kanban nuevo reescrito para Odoo 18 -->
     <record id="view_project_kanban_inherit_repair" model="ir.ui.view">
         <field name="name">project.project.kanban.inherit.repair</field>
         <field name="model">project.project</field>
         <field name="inherit_id" ref="project.view_project_kanban"/>
         <field name="arch" type="xml">
+            <!-- Añadimos campos que necesitamos para el kanban -->
             <field name="partner_id" position="after">
                 <field name="moto_id"/>
                 <field name="display_name"/>
             </field>
-            <xpath expr="//div[hasclass('o_kanban_record_title')]" position="replace">
-                <div class="o_kanban_record_title">
-                    <field name="display_name"/>
-                </div>
-            </xpath>
-            <xpath expr="//div[hasclass('o_kanban_record_subtitle')]" position="replace">
-                <div class="o_kanban_record_subtitle">
-                    <span t-if="record.partner_id.value"><field name="partner_id"/></span>
-                    <span t-if="record.moto_id.value"> - <field name="moto_id"/></span>
-                </div>
+            
+            <!-- En Odoo 18, el formato de la vista kanban puede haber cambiado. 
+                 Usamos una aproximación más segura para modificar el título -->
+            <xpath expr="//templates" position="replace">
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_global_click o_project_kanban_card">
+                            <div class="o_project_kanban_main">
+                                <div class="o_kanban_card_content">
+                                    <div class="o_kanban_primary_left">
+                                        <div class="o_primary">
+                                            <span class="o_text_overflow">
+                                                <field name="display_name"/>
+                                            </span>
+                                        </div>
+                                        <div t-if="record.partner_id.value or record.moto_id.value" class="o_secondary">
+                                            <span t-if="record.partner_id.value"><field name="partner_id"/></span>
+                                            <span t-if="record.moto_id.value"> - <field name="moto_id"/></span>
+                                        </div>
+                                        <div class="o_kanban_record_subtitle">
+                                            <t t-out="record.task_count.value"/> <t t-out="record.label_tasks.value"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_card_manage_pane dropdown-menu" role="menu">
+                                    <div class="o_kanban_card_manage_section o_kanban_manage_reports">
+                                        <div role="menuitem">
+                                            <a type="edit">Proyecto</a>
+                                        </div>
+                                        <div role="menuitem">
+                                            <a t-if="record.task_count.raw_value" name="action_view_tasks" type="object">Tareas</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
             </xpath>
         </field>
     </record>
     
-    <!-- Tree de proyecto modificado para reparaciones -->
-    <record id="view_project_tree_inherit_repair" model="ir.ui.view">
+    <!-- Vista lista (antigua tree) de proyecto modificado para reparaciones -->
+    <record id="view_project_list_inherit_repair" model="ir.ui.view">
         <field name="name">project.project.list.inherit.repair</field>
         <field name="model">project.project</field>
         <field name="inherit_id" ref="project.view_project"/>
