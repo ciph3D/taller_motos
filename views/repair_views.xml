@@ -62,60 +62,23 @@
         </field>
     </record>
     
-    <!-- Kanban nuevo reescrito para Odoo 18 -->
+    <!-- Kanban modificado para Odoo 18 -->
     <record id="view_project_kanban_inherit_repair" model="ir.ui.view">
         <field name="name">project.project.kanban.inherit.repair</field>
         <field name="model">project.project</field>
         <field name="inherit_id" ref="project.view_project_kanban"/>
         <field name="arch" type="xml">
-            <!-- Añadimos campos que necesitamos para el kanban -->
             <field name="partner_id" position="after">
                 <field name="moto_id"/>
                 <field name="display_name"/>
             </field>
             
-            <!-- En Odoo 18, el formato de la vista kanban puede haber cambiado. 
-                 Usamos una aproximación más segura para modificar el título -->
-            <xpath expr="//templates" position="replace">
-                <templates>
-                    <t t-name="kanban-box">
-                        <div t-attf-class="oe_kanban_global_click o_project_kanban_card">
-                            <div class="o_project_kanban_main">
-                                <div class="o_kanban_card_content">
-                                    <div class="o_kanban_primary_left">
-                                        <div class="o_primary">
-                                            <span class="o_text_overflow">
-                                                <field name="display_name"/>
-                                            </span>
-                                        </div>
-                                        <div t-if="record.partner_id.value or record.moto_id.value" class="o_secondary">
-                                            <span t-if="record.partner_id.value"><field name="partner_id"/></span>
-                                            <span t-if="record.moto_id.value"> - <field name="moto_id"/></span>
-                                        </div>
-                                        <div class="o_kanban_record_subtitle">
-                                            <t t-out="record.task_count.value"/> <t t-out="record.label_tasks.value"/>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="o_kanban_card_manage_pane dropdown-menu" role="menu">
-                                    <div class="o_kanban_card_manage_section o_kanban_manage_reports">
-                                        <div role="menuitem">
-                                            <a type="edit">Proyecto</a>
-                                        </div>
-                                        <div role="menuitem">
-                                            <a t-if="record.task_count.raw_value" name="action_view_tasks" type="object">Tareas</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </t>
-                </templates>
-            </xpath>
+            <!-- Eliminamos la modificación completa del kanban template para evitar conflictos -->
+            <!-- Si necesitas personalización adicional, considera crear una vista kanban completamente nueva -->
         </field>
     </record>
     
-    <!-- Vista lista (antigua tree) de proyecto modificado para reparaciones -->
+    <!-- Vista lista de proyecto modificado para reparaciones -->
     <record id="view_project_list_inherit_repair" model="ir.ui.view">
         <field name="name">project.project.list.inherit.repair</field>
         <field name="model">project.project</field>
