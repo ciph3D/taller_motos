@@ -15,14 +15,6 @@ class Repair(models.Model):
     # Campos para ventas/facturación
     sale_order_id = fields.Many2one('sale.order', copy=False)
     
-    # Corrección para invoice_count y invoice_ids
-    invoice_ids = fields.Many2many('account.move', 
-        compute='_compute_invoice_ids', 
-        string='Facturas')
-    invoice_count = fields.Integer(
-        compute='_compute_invoice_ids', 
-        string='Número de Facturas')
-    
     # Campo calculado para mostrar referencia con matrícula
     display_name = fields.Char(compute='_compute_display_name', store=True)
     
@@ -33,15 +25,6 @@ class Repair(models.Model):
                 repair.display_name = f"{repair.name} - {repair.moto_id.display_name}"
             else:
                 repair.display_name = repair.name
-    
-    @api.depends('sale_order_id')
-    def _compute_invoice_ids(self):
-        for repair in self:
-            invoices = self.env['account.move']
-            if repair.sale_order_id:
-                invoices = repair.sale_order_id.invoice_ids
-            repair.invoice_ids = invoices
-            repair.invoice_count = len(invoices)
     
     @api.onchange('moto_id')
     def _onchange_moto_id(self):
@@ -76,16 +59,6 @@ class Repair(models.Model):
             'res_model': 'sale.order',
             'view_mode': 'form',
             'res_id': self.sale_order_id.id,
-        }
-    
-    def action_view_invoices(self):
-        self.ensure_one()
-        return {
-            'name': _('Facturas'),
-            'type': 'ir.actions.act_window',
-            'res_model': 'account.move',
-            'view_mode': 'tree,form',
-            'domain': [('id', 'in', self.invoice_ids.ids)],
         }
     
     def action_update_moto_kilometraje(self):

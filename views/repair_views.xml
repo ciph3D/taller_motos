@@ -14,10 +14,7 @@
                         invisible="sale_order_id != False" string="Crear Presupuesto"/>
                 <button name="action_view_sale_order" type="object" class="oe_stat_button" icon="fa-file-text"
                         invisible="sale_order_id == False" string="Ver Presupuesto"/>
-                <button name="action_view_invoices" type="object" class="oe_stat_button" icon="fa-file-text-o"
-                        invisible="invoice_count == 0">
-                    <field name="invoice_count" widget="statinfo" string="Facturas"/>
-                </button>
+                <!-- Eliminamos completamente el botón de facturas -->
                 <button name="action_update_moto_kilometraje" type="object" class="oe_stat_button" icon="fa-refresh"
                         invisible="moto_id == False" string="Actualizar Km"/>
             </div>
