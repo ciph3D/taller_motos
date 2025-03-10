@@ -5,6 +5,7 @@
     'summary': 'Gestión de taller de motos',
     'description': """
         Módulo para gestionar un taller de motos
+        - Preserva datos de motos al desinstalar
     """,
     'depends': [
         'base', 
@@ -23,6 +24,7 @@
         'views/repair_views.xml',
         'views/menu_views.xml',
     ],
+    'uninstall_hook': 'uninstall_hook',  # Añadimos este hook
     'application': True,
     'installable': True,
     'license': 'LGPL-3',

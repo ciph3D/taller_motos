@@ -14,8 +14,14 @@ class Repair(models.Model):
     
     # Campos para ventas/facturación
     sale_order_id = fields.Many2one('sale.order', copy=False)
-    invoice_ids = fields.Many2many('account.move', compute='_compute_invoice_ids')
-    invoice_count = fields.Integer(compute='_compute_invoice_ids')
+    
+    # Corrección para invoice_count y invoice_ids
+    invoice_ids = fields.Many2many('account.move', 
+        compute='_compute_invoice_ids', 
+        string='Facturas')
+    invoice_count = fields.Integer(
+        compute='_compute_invoice_ids', 
+        string='Número de Facturas')
     
     # Campo calculado para mostrar referencia con matrícula
     display_name = fields.Char(compute='_compute_display_name', store=True)
